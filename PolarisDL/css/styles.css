@@ -1,0 +1,63 @@
+#lista-demons {
+    max-height: 500px;
+    overflow-y: auto;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 8px;
+    padding-right: 5px;
+    
+    /* Fondo negro al 20% siempre visible */
+    background-color: rgba(0, 0, 0, 0.2) !important; 
+}
+
+.boton-nivel, 
+.list-group-item-action.boton-nivel {
+    background-color: transparent !important; /* Fuerza a que siempre sea transparente */
+    color: #ffffff !important;
+    border-color: rgba(200, 200, 200, 0.4) !important; /* Separadores muy sutiles */
+    transition: background-color s ease;
+}
+
+.boton-nivel:hover,
+.list-group-item-action.boton-nivel:hover {
+    background-color: rgba(255, 255, 255, 0.08) !important; /* Opacidad ligera al hover */
+    color: #ffffff !important;
+}
+
+.boton-nivel.active,
+.list-group-item-action.boton-nivel.active {
+    background-color: #696a6a !important; /* Azul sólido */
+    border-color: #ffffff !important;
+    color: #ffffff !important;
+    opacity: 1 !important;
+}
+
+.boton-nivel.active h5,
+.boton-nivel.active small,
+.boton-nivel.active span {
+    color: #ffffff !important;
+}
+.columna-scroll {
+    /* Limitamos la altura al 80% de la ventana del navegador */
+    max-height: 80vh; 
+    
+    /* Activamos el scroll vertical interno si el contenido se pasa */
+    overflow-y: auto; 
+    
+    /* Evita que el contenido choque feo contra el borde derecho */
+    padding-right: 15px; 
+}
+
+.columna-scroll::-webkit-scrollbar {
+    width: 6px;
+}
+.columna-scroll::-webkit-scrollbar-track {
+    background: transparent;
+}
+.columna-scroll::-webkit-scrollbar-thumb {
+    background: #4f545c;
+    border-radius: 4px;
+}
+
+.BgPag{
+background-repeat: no-repeat;   background-size: cover; 
+}

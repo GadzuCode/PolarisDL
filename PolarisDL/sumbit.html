@@ -1,0 +1,100 @@
+<!doctype html>
+<html lang="en" data-bs-theme="dark">
+    <head>
+        <title>Polarianos Demon List</title>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <link href="css/styles.css" rel="stylesheet">
+       <script type="module" src="js/sumbit.js"></script>
+        <!-- Bootstrap CSS v5.3.8 -->
+        <link
+            href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css"
+            rel="stylesheet"
+            integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB"
+            crossorigin="anonymous"
+        />
+    </head>
+
+<body background="Recursos/okei3.png" class="BgPag">
+         <header style="background-color: transparent; "> 
+        <nav class="navbar navbar-expand-lg sticky-top border-bottom  py-3 shadow" style="font-size: 1.3rem;   ">
+    <div class="container-fluid px-4 ">
+        <a class="navbar-brand p-0 me-4" href="/">
+            <img src="Recursos/Border.png" alt="AREDL_logo" height="55" class="d-inline-block align-middle">  
+        </a>
+       <!--  <a class="navbar-brand p-0 me-0" href="/">POLARIANOS DEMONLIST -->
+        </a>
+        <button class="navbar-toggler p-2" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav me-auto mb-0 mx-auto fw-bold align-items-lg-center">
+                <li class="nav-item align-items-lg-center">
+                    <a class="nav-link btn btn-outline-secondary text-white px-4 py-2 mt-2 mt-lg-0 fw-bold" href="Index.html">DEMON LIST </a>
+                </li>
+                <li class="nav-item">
+                    <a class=" nav-link btn btn-outline-secondary text-white px-4 py-2 mt-2 mt-lg-0 fw-bold" href="ranking.html">RANKINGS</a>
+                </li>
+                
+                <li class="nav-item ms-lg-3">
+                    <a class="nav-link btn btn-outline-secondary text-white px-4 py-2 mt-2 mt-lg-0 fw-bold"  href="sumbit.html">SUBMIT A RECORD</a>
+                </li>
+            </ul>
+
+           
+        </div>
+    </div>
+</nav> </header></header>       
+        <main>
+<div class="container mt-2">
+    <form>
+  <div class="mb-1">
+    <h2>Nivel</h2>
+    <label for="exampleInputEmail1" class="form-label" style="font-size: 1-4rem;">Escoge dentro de la siguiente lista el nivel para el que quieres subir un record.</label>
+    <input class="form-control" list="OpcionesNivel" id="buscar-nivel" placeholder="Escribe para buscar...">
+<datalist id="OpcionesNivel"></datalist>
+    <div id="emailHelp" class="form-text">Si el nivel no aparece, favor de contactarse con el equipo de Moderadores!</div>
+  </div>
+
+  <div class="mb-1">
+    <h2>Jugador</h2>
+    <label for="exampleInputEmail1" class="form-label" style="font-size: 1-4rem;">Escoge dentro de la siguiente lista el jugador con el que quieres subir un record.</label>
+    <input class="form-control" list="dataPlayers" id="buscar-players" placeholder="Escribe para buscar...">
+<datalist id="dataPlayers">
+</datalist>
+    <div id="emailHelp" class="form-text">Si el jugador no aparece, favor de contactarse con el equipo de Moderadores!</div>
+  </div>
+
+<div class="mb-1">
+    <h2>Video</h2>
+    <label for="exampleInputEmail1" class="form-label" style="font-size: 1-4rem;">Sube el link de youtube de tu run al 100% que se publicará como tu record.</label>
+    <input class="form-control" type="text" id="LinkMostrar" placeholder="Link de tu Video de Youtube" aria-label="default input example">
+  </div>
+
+<div class="mb-1">
+    <h2>Raw Completition</h2>
+    <label for="exampleInputEmail1" class="form-label" style="font-size: 1-4rem;">Sube el link de tu Run en Raw, sin edición, solo la completition.</label>
+    <input class="form-control" type="text"id="LinkRaw" placeholder="Link de tu Video RAW" aria-label="default input example">
+<div id="emailHelp" class="form-text">*Esta se utilizará para revisar si tu record es valido.</div>  
+</div>
+
+<div class="mb-1">
+    <button type="submit" id="sumbit" class="btn btn-secondary">Submit A Record</button>
+</div>
+  
+</form>
+</div>
+
+        </main>
+        <footer>
+            <!-- place footer here -->
+        </footer>
+        <!-- Bootstrap JavaScript Bundle (includes Popper) -->
+        <script
+            src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"
+            integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI"
+            crossorigin="anonymous"
+        ></script>
+    </body>
+</html>
