@@ -24,7 +24,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 const posicion = indice + 1;
                 
                 const nombreJugador = jugador.Nombre || "Jugador Desconocido";
-                const puntosTotales = jugador.Puntos_Totales || 0; 
+                const puntosTotales = jugador.puntos_totales || 0; 
 
                 fila.innerHTML = `
                     <td class="fw-bold fs-5 text-warning">#${posicion}</td>
