@@ -39,12 +39,12 @@ export default async function handler(req, res) {
             return res.status(400).send('Acción no válida.');
         }
 
-        // 2. Modificación del UPDATE con .select() para verificar si de verdad cambió
+        // 2. Hacer el UPDATE forzando las mayúsculas exactas con comillas dobles
         const { data, error } = await supabase
             .from('Sumbits')
-            .update({ Status: String(nuevoEstado) }) // Forzamos que sea un texto limpio
-            .eq('Id_Sumbit', parseInt(id, 10))       // Forzamos que el ID sea un número entero
-            .select();                               // 👈 Le pedimos que nos regrese la fila modificada
+            .update({ Status: String(nuevoEstado) })
+            .eq('"Id_Sumbit"', parseInt(id, 10)) 
+            .select();                            
 
         if (error) throw error;
 
