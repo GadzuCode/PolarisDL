@@ -38,7 +38,7 @@
 }
 .columna-scroll {
     /* Limitamos la altura al 80% de la ventana del navegador */
-    max-height: 10vh; 
+    max-height: 95vh; 
     
     /* Activamos el scroll vertical interno si el contenido se pasa */
     overflow-y: auto; 
