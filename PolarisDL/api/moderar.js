@@ -8,43 +8,58 @@ export default async function handler(req, res) {
     }
 
     const { action, id, token } = req.query;
+
+    // 1. Validar Token de Seguridad
     if (!token || token !== process.env.MOD_SECRET_TOKEN) {
         return res.status(403).send(`
             <div style="font-family: sans-serif; text-align: center; padding: 50px; background-color: #1a1a1a; color: #ff4d4d; height: 100vh; margin:0;">
                 <h1>❌ Acceso Denegado</h1>
-                <p>No tienes los permisos o el token de seguridad es inválido.</p>
+                <p>El token de seguridad es inválido o expiró.</p>
             </div>
         `);
     }
 
     if (!id || !action) {
-        return res.status(400).send('Faltan parámetros importantes (id o acción).');
+        return res.status(400).send('Faltan parámetros (id o action).');
     }
 
     try {
         let nuevoEstado = 'P';
         let mensajeVisual = '';
-        let colorHtml = '#43b581'; 
+        let colorHtml = '#43b581'; // Verde
 
         if (action === 'aceptar') {
-            nuevoEstado = 'A'; // 'A' de Aprobado
+            nuevoEstado = 'A';
             mensajeVisual = `✅ ¡El Récord #${id} ha sido APROBADO con éxito!`;
         } else if (action === 'rechazar') {
-            nuevoEstado = 'R'; // 'R' de Rechazado
+            nuevoEstado = 'R';
             mensajeVisual = `❌ El Récord #${id} ha sido RECHAZADO.`;
-            colorHtml = '#f04747'; 
+            colorHtml = '#f04747'; // Rojo
         } else {
-            return res.status(400).send('Acción no reconocida.');
+            return res.status(400).send('Acción no válida.');
         }
 
-        const { error } = await supabase
-            .from('Sumbits') 
-            .update({ Status: nuevoEstado })
-            .eq('Id_Sumbit', id);
+        // 2. Modificación del UPDATE con .select() para verificar si de verdad cambió
+        const { data, error } = await supabase
+            .from('Sumbits')
+            .update({ Status: String(nuevoEstado) }) // Forzamos que sea un texto limpio
+            .eq('Id_Sumbit', parseInt(id, 10))       // Forzamos que el ID sea un número entero
+            .select();                               // 👈 Le pedimos que nos regrese la fila modificada
 
         if (error) throw error;
 
-     
+        // 🚨 SI SUPABASE NO DEVOLVIÓ NADA, SIGNIFICA QUE NO ENCONTRÓ LA FILA O NO HUBO CAMBIOS
+        if (!data || data.length === 0) {
+            return res.status(404).send(`
+                <div style="font-family: sans-serif; text-align: center; padding: 50px; background-color: #1a1a1a; color: #ffaa00; height: 100vh; margin:0;">
+                    <h1>⚠️ Alerta de Base de Datos</h1>
+                    <p>La base de datos respondió OK, pero <b>no se modificó ninguna fila</b>.</p>
+                    <p>Verifica que el Récord <b>#${id}</b> realmente exista en Supabase con la columna <b>Id_Sumbit</b>.</p>
+                </div>
+            `);
+        }
+
+        // 3. Si todo salió excelente, mostramos la pantalla de éxito real
         res.setHeader('Content-Type', 'text/html; charset=utf-8');
         return res.status(200).send(`
             <!DOCTYPE html>
@@ -57,14 +72,15 @@ export default async function handler(req, res) {
                 <div style="background-color: #1e1e1e; padding: 40px; border-radius: 12px; box-shadow: 0 8px 24px rgba(0,0,0,0.5); text-align: center; border-top: 8px solid ${colorHtml}; max-width: 400px;">
                     <h1 style="color: ${colorHtml}; margin-bottom: 20px;">Polaris Demon List</h1>
                     <p style="font-size: 1.2rem; line-height: 1.6; margin-bottom: 30px;">${mensajeVisual}</p>
-                    <p style="color: #888; font-size: 0.9rem;">Ya puedes cerrar esta pestaña y regresar a Discord.</p>
+                    <p style="color: #555; font-size: 0.85rem; margin-bottom: 10px;">Confirmado en Supabase: Registro actualizado en tiempo real.</p>
+                    <p style="color: #888; font-size: 0.9rem;">Ya puedes cerrar esta pestaña.</p>
                 </div>
             </body>
             </html>
         `);
 
     } catch (err) {
-        console.error("Error en moderación:", err);
-        return res.status(500).send(`Error interno al actualizar la base de datos: ${err.message}`);
+        console.error("❌ Error crítico en api/moderar:", err);
+        return res.status(500).send(`Error interno del servidor: ${err.message}`);
     }
 }
