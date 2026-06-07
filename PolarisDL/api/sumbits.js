@@ -60,6 +60,47 @@ export default async function handler(req, res) {
                 return res.status(400).json({ error: error.message });
             }
 
+            const webhookUrl = process.env.DISCORD_WEBHOOK_URL;
+            const modToken = process.env.MOD_SECRET_TOKEN;
+
+            if (webhookUrl) {
+                const idSumbitCreado = data && data[0] ? data[0].Id_Sumbit : 'Desconocido';
+
+                const discordPayload = {
+                    username: "Polaris Récords Bot",
+                    avatar_url: "https://polaris-dl.vercel.app/Recursos/Border.png",
+                    embeds: [{
+                        title: "Nueva petición ponganse a jalar",
+                        color: 16711680, // Tu color rojo puro
+                        fields: [
+                            { name: "ID Récord", value: `\`#${idSumbitCreado}\``, inline: true },
+                            { name: "ID Nivel", value: `${Nivel}`, inline: true },
+                            { name: "ID Jugador", value: `${Player}`, inline: true },
+                            { name: "Link para Mostrar", value: Link_Mostrar },
+                            { name: "Link Raw (Prueba)", value: Link_Raw },
+                            { 
+                                name: "⚡ ACCIONES DE MODERACIÓN", 
+                                value: `🟩 [Aceptar Récord](https://polaris-dl.vercel.app/api/moderar?action=aceptar&id=${idSumbitCreado}&token=${modToken})\n\n🟥 [Rechazar Récord](https://polaris-dl.vercel.app/api/moderar?action=rechazar&id=${idSumbitCreado}&token=${modToken})`
+                            }
+                        ],
+                        footer: { text: "Polaris Demon List - Haz clic en una acción para procesar" },
+                        timestamp: new Date()
+                    }]
+                };
+
+                // Lo enviamos con fetch normal pero dentro de un try/catch aislado para que si Discord falla, tu web NO se caiga
+                try {
+                    await fetch(webhookUrl, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(discordPayload)
+                    });
+                } catch (discordErr) {
+                    console.error("Error al enviar el webhook a Discord:", discordErr);
+                }
+            }
+            // =========================================================
+
             return res.status(201).json(data);
 
         } catch (err) {
