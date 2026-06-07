@@ -1,8 +1,7 @@
-
+const supabase = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_ANON_KEY);
 import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm'
 const REST_URL = '';
-const supabase = createClient('https://phjrcdjjftlvarupieyk.supabase.co', 'sb_publishable_A1nmH7cSLTR0as3dTyEmOw_6ku0MNO3')
-
+const webhookUrl = process.env.DISCORD_WEBHOOK_URL;
 
 function cargarDatalistNiveles() {
     const datalist = document.getElementById('OpcionesNivel');
@@ -141,3 +140,74 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 });
+
+
+// Inicializamos Supabase de lado del servidor con las variables ocultas de Vercel
+
+
+export default async function handler(req, res) {
+    // Forzamos a que solo acepte el método POST del formulario
+    if (req.method !== 'POST') {
+        return res.status(405).json({ error: 'Método no permitido' });
+    }
+
+    try {
+        // 1. Recibimos el objeto idéntico a como lo construiste en tu frontend
+        const { Nivel, Player, Link_Mostrar, Link_Raw, Status } = req.body;
+
+        // 2. Insertamos en Supabase. 
+        // 🚨 REGLA: Las llaves de la izquierda deben ser las columnas EXACTAS de tu tabla en Supabase.
+        const { data, error: supabaseError } = await supabase
+            .from('submits') // <- Pon aquí el nombre real de tu tabla de récords
+            .insert([
+                {
+                    Nivel: Nivel,                 // ID del nivel
+                    Player: Player,               // ID del jugador
+                    Link_Mostrar: Link_Mostrar,
+                    Link_Raw: Link_Raw,
+                    Status: Status || 'P'
+                }
+            ]);
+
+        if (supabaseError) {
+            throw new Error(`Error en Supabase: ${supabaseError.message}`);
+        }
+
+        //  Webhook  de Discord
+        const webhookUrl = process.env.DISCORD_WEBHOOK_URL;
+
+        if (webhookUrl) {
+            const discordPayload = {
+                username: "Polaris Récords Bot",
+                avatar_url: "https://polaris-dl.vercel.app/Recursos/Border.png",
+                embeds: [{
+                    title: "📥 ¡NUEVO RÉCORD PENDIENTE DE REVISIÓN!",
+                    color: 16753920, 
+                    fields: [
+                        { name: "🆔 ID Nivel", value: `${Nivel}`, inline: true },
+                        { name: "🆔 ID Jugador", value: `${Player}`, inline: true },
+                        { name: "🚦 Estado Inicial", value: `\`${Status || 'P'}\` (Pendiente)`, inline: true },
+                        { name: "🔗 Link para Mostrar", value: Link_Mostrar },
+                        { name: "📁 Link Raw (Prueba)", value: Link_Raw }
+                    ],
+                    footer: { text: "Polaris Demon List - Panel de Moderación" },
+                    timestamp: new Date()
+                }]
+            };
+
+          
+            await fetch(webhookUrl, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(discordPayload)
+            });
+        }
+
+       
+        return res.status(200).json({ success: true });
+
+    } catch (error) {
+        console.error("Error crítico en endpoint de sumbits:", error);
+        return res.status(500).json({ error: error.message });
+    }
+}
