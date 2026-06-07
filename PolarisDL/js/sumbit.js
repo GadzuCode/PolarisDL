@@ -1,5 +1,5 @@
 import { createClient } from '@supabase/supabase-js';
-import https from 'https'; // 👈 Importamos el módulo nativo e indestructible de Node.js
+import * as https from 'https'; // 👈 Sintaxis ultra-compatible para Vercel
 
 const supabase = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_ANON_KEY);
 
@@ -13,9 +13,10 @@ export default async function handler(req, res) {
             const { id_level } = req.query;
 
             if (!id_level) {
-                return res.status(400).json({ error: 'Falta el parámetro Nivel' });
+                return res.status(400).json({ error: 'Falta el parámetro id_level' });
             }
 
+            // Envolvemos la consulta en un bloque seguro para que NUNCA tire un Error 500 genérico
             const { data, error } = await supabase
                 .from('Sumbits') 
                 .select(`
@@ -29,15 +30,16 @@ export default async function handler(req, res) {
                 .eq('Status', 'A');
 
             if (error) {
-                console.error("❌ Error en Supabase (GET):", error.message);
+                console.error("❌ Error devuelto por Supabase (GET):", error.message);
                 return res.status(400).json({ error: error.message });
             }
 
-            return res.status(200).json(data);
+            // Si todo sale bien, aseguramos regresar un JSON válido (aunque esté vacío [])
+            return res.status(200).json(data || []);
             
         } catch (err) {
-            console.error("❌ Error en el servidor (GET):", err);
-            return res.status(500).json({ error: 'Error interno del servidor' });
+            console.error("❌ Error crítico en el catch del servidor (GET):", err);
+            return res.status(500).json({ error: 'Error interno en la lectura de datos: ' + err.message });
         }
     }
 
@@ -68,7 +70,7 @@ export default async function handler(req, res) {
             }
 
             // ==========================================
-            // 📢 ENVIAR AL WEBHOOK DE DISCORD (Método HTTPS Seguro)
+            // 📢 ENVIAR AL WEBHOOK DE DISCORD
             // ==========================================
             const webhookUrl = process.env.DISCORD_WEBHOOK_URL;
             const modToken = process.env.MOD_SECRET_TOKEN;
@@ -98,7 +100,7 @@ export default async function handler(req, res) {
                     }]
                 });
 
-                // Enviamos a Discord usando la librería nativa para evitar caídas
+                // Petición HTTPS nativa compatible con Node.js en Vercel
                 await new Promise((resolve) => {
                     const reqDiscord = https.request(webhookUrl, {
                         method: 'POST',
@@ -113,7 +115,7 @@ export default async function handler(req, res) {
 
                     reqDiscord.on('error', (errDiscord) => {
                         console.error("❌ Error enviando a Discord:", errDiscord);
-                        resolve(); // Resolvemos para no trabar la carga de Supabase
+                        resolve();
                     });
 
                     reqDiscord.write(discordPayload);
@@ -121,12 +123,11 @@ export default async function handler(req, res) {
                 });
             }
 
-            // 3. Devolvemos el éxito al frontend
             return res.status(201).json(data);
 
         } catch (err) {
-            console.error("❌ Error del servidor (POST):", err);
-            return res.status(500).json({ error: 'Error interno del servidor' });
+            console.error("❌ Error crítico en el catch del servidor (POST):", err);
+            return res.status(500).json({ error: 'Error interno en la inserción: ' + err.message });
         }
     }
 
