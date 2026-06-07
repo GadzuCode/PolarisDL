@@ -42,6 +42,7 @@ export default async function handler(req, res) {
         try {
             const { Nivel, Player, Link_Mostrar, Link_Raw, Status } = req.body;
 
+            // 1. Insertar en la Base de Datos pidiendo explícitamente que devuelva TODA la fila creada
             const { data, error } = await supabase
                 .from('Sumbits')
                 .insert([
@@ -53,25 +54,34 @@ export default async function handler(req, res) {
                         Status: Status || 'P' 
                     }
                 ])
-                .select(); 
+                .select('*'); // 👈 Forzamos a Supabase a retornar el registro completo con su nuevo ID
 
             if (error) {
                 console.error("Error en Supabase:", error.message);
                 return res.status(400).json({ error: error.message });
             }
 
+            // =========================================================
+            // 📢 ENVIAR AL WEBHOOK DE DISCORD SEGURO
+            // =========================================================
             const webhookUrl = process.env.DISCORD_WEBHOOK_URL;
             const modToken = process.env.MOD_SECRET_TOKEN;
 
             if (webhookUrl) {
-                const idSumbitCreado = data && data[0] ? data[0].Id_Sumbit : 'Desconocido';
+                // Verificamos minuciosamente si Supabase nos devolvió el ID, mapeando mayúsculas y minúsculas
+                let idSumbitCreado = 'Desconocido';
+                if (data && data[0]) {
+                    idSumbitCreado = data[0].Id_Sumbit || data[0].id_sumbit || data[0].id;
+                }
+
+                console.log("🚀 ID Detectado para Discord:", idSumbitCreado);
 
                 const discordPayload = {
                     username: "Polaris Récords Bot",
                     avatar_url: "https://polaris-dl.vercel.app/Recursos/Border.png",
                     embeds: [{
                         title: "Nueva petición ponganse a jalar",
-                        color: 16711680, // Tu color rojo puro
+                        color: 16711680, 
                         fields: [
                             { name: "ID Récord", value: `\`#${idSumbitCreado}\``, inline: true },
                             { name: "ID Nivel", value: `${Nivel}`, inline: true },
@@ -88,7 +98,6 @@ export default async function handler(req, res) {
                     }]
                 };
 
-                // Lo enviamos con fetch normal pero dentro de un try/catch aislado para que si Discord falla, tu web NO se caiga
                 try {
                     await fetch(webhookUrl, {
                         method: 'POST',
