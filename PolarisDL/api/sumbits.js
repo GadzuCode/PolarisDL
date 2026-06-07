@@ -98,8 +98,8 @@ export default async function handler(req, res) {
                         color: 16711680, 
                         fields: [
                             { name: "ID Récord", value: `\`#${idSumbitCreado}\``, inline: true },
-                            { name: "Nivel", value: `🎵 **${nombreNivel}**`, inline: true },
-                            { name: "Jugador", value: `👤 **${nombreJugador}**`, inline: true },
+                            { name: "Nivel", value: ` **${nombreNivel}**`, inline: true },
+                            { name: "Jugador", value: ` **${nombreJugador}**`, inline: true },
                             { name: "Link para Mostrar", value: Link_Mostrar },
                             { name: "Link Raw (Prueba)", value: Link_Raw },
                             { 
