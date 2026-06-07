@@ -65,7 +65,7 @@ export default async function handler(req, res) {
             let nombreNivel = `ID: ${Nivel}`;
 
             try {
-                // Buscamos el nombre del Jugador
+                // Buscamos el nombre del Jugador (¡Este ya te jalaba al 100%!)
                 const { data: dbJugador } = await supabase
                     .from('Players') 
                     .select('Nombre')
@@ -73,13 +73,14 @@ export default async function handler(req, res) {
                     .single();
                 if (dbJugador) nombreJugador = dbJugador.Nombre;
 
-               
+                // Buscamos el nombre del Nivel
                 const { data: dbNivel } = await supabase
                     .from('Levels') 
-                    .select('Nombre_Nivel') 
+                    .select('Nombre_Nivel') // 👈 Seleccionas Nombre_Nivel
                     .eq('ID_Level', Nivel)   
                     .single();
-                if (dbNivel) nombreNivel = dbNivel.Nombre;
+                if (dbNivel) nombreNivel = dbNivel.Nombre_Nivel; // 👈 ¡Corregido aquí para usar Nombre_Nivel!
+                
             } catch (errNombres) {
                 console.error("Error al traer nombres de las tablas de relación:", errNombres);
             }
