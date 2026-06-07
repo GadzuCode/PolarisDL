@@ -67,7 +67,7 @@ export default async function handler(req, res) {
             try {
                 // Buscamos el nombre del Jugador
                 const { data: dbJugador } = await supabase
-                    .from('Player') 
+                    .from('Players') 
                     .select('Nombre')
                     .eq('ID_plyr', Player) 
                     .single();
@@ -75,7 +75,7 @@ export default async function handler(req, res) {
 
                
                 const { data: dbNivel } = await supabase
-                    .from('Niveles') 
+                    .from('Levels') 
                     .select('Nombre_Nivel') 
                     .eq('ID_Level', Nivel)   
                     .single();
