@@ -1,6 +1,5 @@
 import { createClient } from '@supabase/supabase-js';
 
-// Inicializamos Supabase una sola vez para todo el archivo
 const supabase = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_ANON_KEY);
 
 export default async function handler(req, res) {
@@ -14,7 +13,7 @@ export default async function handler(req, res) {
             }
 
             const { data, error } = await supabase
-                .from('Sumbits') // Asegúrate de que coincida con tu tabla en Supabase
+                .from('Sumbits') 
                 .select(`
                     Id_Sumbit,
                     Link_Mostrar,
@@ -43,9 +42,9 @@ export default async function handler(req, res) {
         try {
             const { Nivel, Player, Link_Mostrar, Link_Raw, Status } = req.body;
 
-            // 1. Insertar en la Base de Datos
+        
             const { data, error: supabaseError } = await supabase
-                .from('Sumbits') // Mismo nombre de tabla que en el GET
+                .from('Sumbits') 
                 .insert([
                     { 
                         Nivel: Nivel, 
@@ -62,37 +61,10 @@ export default async function handler(req, res) {
                 return res.status(400).json({ error: supabaseError.message });
             }
 
-            // 2. Sistema del Webhook secreto de Discord (¡Integrado aquí!)
-            const webhookUrl = process.env.DISCORD_WEBHOOK_URL;
 
-            if (webhookUrl) {
-                const discordPayload = {
-                    username: "Polaris Récords Bot",
-                    avatar_url: "https://polaris-dl.vercel.app/Recursos/Border.png",
-                    embeds: [{
-                        title: "📥 ¡NUEVO RÉCORD PENDIENTE DE REVISIÓN!",
-                        color: 16753920, // Color naranja elegante
-                        fields: [
-                            { name: "🆔 ID Nivel", value: `${Nivel}`, inline: true },
-                            { name: "🆔 ID Jugador", value: `${Player}`, inline: true },
-                            { name: "🚦 Estado Inicial", value: `\`${Status || 'P'}\` (Pendiente)`, inline: true },
-                            { name: "🔗 Link para Mostrar", value: Link_Mostrar },
-                            { name: "📁 Link Raw (Prueba)", value: Link_Raw }
-                        ],
-                        footer: { text: "Polaris Demon List - Panel de Moderación" },
-                        timestamp: new Date()
-                    }]
-                };
+           
 
-                // Enviamos la alerta a tu canal de Discord sin trancarte el proceso
-                await fetch(webhookUrl, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(discordPayload)
-                }).catch(err => console.error("Error al enviar a Discord:", err));
-            }
-
-            // Devolvemos el estatus de éxito 201 (Creado) junto con la data ingresada
+       
             return res.status(201).json(data);
 
         } catch (err) {
@@ -101,6 +73,40 @@ export default async function handler(req, res) {
         }
     }
 
-    // Si entran con un método no permitido (PUT, DELETE, etc.)
     return res.status(405).json({ error: 'Método no permitido' });
+
+}
+
+const webhookUrl = process.env.DISCORD_WEBHOOK_URL;
+const modToken = process.env.MOD_SECRET_TOKEN;
+
+if (webhookUrl) {
+    const idSumbitCreado = data && data[0] ? data[0].Id_Sumbit : 'Desconocido';
+
+    const discordPayload = {
+        username: "Polaris Récords Bot",
+        avatar_url: "https://polaris-dl.vercel.app/Recursos/Border.png",
+        embeds: [{
+            title: "Nueva petición ponganse a jalar",
+            color: 16711680, 
+            fields: [
+                { name: "ID Nivel", value: `${Nivel}`, inline: true },
+                { name: "ID Jugador", value: `${Player}`, inline: true },
+                { name: "Link para Mostrar", value: Link_Mostrar },
+                { name: "Link Raw (Prueba)", value: Link_Raw },
+                { 
+                    name: "⚡ ACCIONES DE MODERACIÓN", 
+                    value: `🟩 [Aceptar Récord](https://polaris-dl.vercel.app/api/moderar?action=aceptar&id=${idSumbitCreado}&token=${modToken})\n\n🟥 [Rechazar Récord](https://polaris-dl.vercel.app/api/moderar?action=rechazar&id=${idSumbitCreado}&token=${modToken})`
+                }
+            ],
+            footer: { text: "Polaris Demon List - Haz clic en una acción para procesar" },
+            timestamp: new Date()
+        }]
+    };
+
+    await fetch(webhookUrl, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(discordPayload)
+    }).catch(err => console.error("Error al enviar a Discord:", err));
 }
