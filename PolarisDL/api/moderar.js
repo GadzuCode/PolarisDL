@@ -40,11 +40,11 @@ export default async function handler(req, res) {
         }
 
         // 2. Hacer el UPDATE forzando las mayúsculas exactas con comillas dobles
-        const { data, error } = await supabase
+       const { data, error } = await supabase
             .from('Sumbits')
             .update({ Status: String(nuevoEstado) })
-            .eq('"Id_Sumbit"', parseInt(id, 10)) 
-            .select();                            
+            .filter('Id_Sumbit', 'eq', parseInt(id, 10)) // 👈 Usamos .filter() nativo en lugar de .eq()
+            .select();                   
 
         if (error) throw error;
 
