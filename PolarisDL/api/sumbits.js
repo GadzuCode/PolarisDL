@@ -38,12 +38,11 @@ export default async function handler(req, res) {
     }
 
 
-    if (req.method === 'POST') {
+  if (req.method === 'POST') {
         try {
             const { Nivel, Player, Link_Mostrar, Link_Raw, Status } = req.body;
 
-            // 1. Insertar en la Base de Datos pidiendo explícitamente que devuelva TODA la fila creada
-            const { data, error } = await supabase
+            const { data: registroInsertado, error: errorInsert } = await supabase
                 .from('Sumbits')
                 .insert([
                     { 
@@ -54,27 +53,42 @@ export default async function handler(req, res) {
                         Status: Status || 'P' 
                     }
                 ])
-                .select('*'); // 👈 Forzamos a Supabase a retornar el registro completo con su nuevo ID
+                .select('*'); 
 
-            if (error) {
-                console.error("Error en Supabase:", error.message);
-                return res.status(400).json({ error: error.message });
+            if (errorInsert) {
+                console.error("Error al insertar en Supabase:", errorInsert.message);
+                return res.status(400).json({ error: errorInsert.message });
             }
 
-            // =========================================================
-            // 📢 ENVIAR AL WEBHOOK DE DISCORD SEGURO
-            // =========================================================
+           
+            let nombreJugador = `ID: ${Player}`;
+            let nombreNivel = `ID: ${Nivel}`;
+
+            try {
+                // Buscamos el nombre del Jugador
+                const { data: dbJugador } = await supabase
+                    .from('Player') 
+                    .select('Nombre')
+                    .eq('ID_plyr', Player) 
+                    .single();
+                if (dbJugador) nombreJugador = dbJugador.Nombre;
+
+               
+                const { data: dbNivel } = await supabase
+                    .from('Niveles') 
+                    .select('Nombre_Nivel') 
+                    .eq('ID_Level', Nivel)   
+                    .single();
+                if (dbNivel) nombreNivel = dbNivel.Nombre;
+            } catch (errNombres) {
+                console.error("Error al traer nombres de las tablas de relación:", errNombres);
+            }
+
             const webhookUrl = process.env.DISCORD_WEBHOOK_URL;
             const modToken = process.env.MOD_SECRET_TOKEN;
 
             if (webhookUrl) {
-                // Verificamos minuciosamente si Supabase nos devolvió el ID, mapeando mayúsculas y minúsculas
-                let idSumbitCreado = 'Desconocido';
-                if (data && data[0]) {
-                    idSumbitCreado = data[0].Id_Sumbit || data[0].id_sumbit || data[0].id;
-                }
-
-                console.log("🚀 ID Detectado para Discord:", idSumbitCreado);
+                const idSumbitCreado = registroInsertado && registroInsertado[0] ? registroInsertado[0].Id_Sumbit : 'Desconocido';
 
                 const discordPayload = {
                     username: "Polaris Récords Bot",
@@ -84,8 +98,8 @@ export default async function handler(req, res) {
                         color: 16711680, 
                         fields: [
                             { name: "ID Récord", value: `\`#${idSumbitCreado}\``, inline: true },
-                            { name: "ID Nivel", value: `${Nivel}`, inline: true },
-                            { name: "ID Jugador", value: `${Player}`, inline: true },
+                            { name: "Nivel", value: `🎵 **${nombreNivel}**`, inline: true },
+                            { name: "Jugador", value: `👤 **${nombreJugador}**`, inline: true },
                             { name: "Link para Mostrar", value: Link_Mostrar },
                             { name: "Link Raw (Prueba)", value: Link_Raw },
                             { 
@@ -105,12 +119,11 @@ export default async function handler(req, res) {
                         body: JSON.stringify(discordPayload)
                     });
                 } catch (discordErr) {
-                    console.error("Error al enviar el webhook a Discord:", discordErr);
+                    console.error("Error al enviar a Discord:", discordErr);
                 }
             }
-            // =========================================================
 
-            return res.status(201).json(data);
+            return res.status(201).json(registroInsertado);
 
         } catch (err) {
             console.error("Error del servidor:", err);
