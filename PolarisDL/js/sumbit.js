@@ -1,4 +1,4 @@
-
+const supabase = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_ANON_KEY);
 import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm'
 const REST_URL = '';
 const webhookUrl = process.env.DISCORD_WEBHOOK_URL;
@@ -141,10 +141,9 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 });
 
-import { createClient } from '@supabase/supabase-js';
 
 // Inicializamos Supabase de lado del servidor con las variables ocultas de Vercel
-const supabase = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_ANON_KEY);
+
 
 export default async function handler(req, res) {
     // Forzamos a que solo acepte el método POST del formulario
