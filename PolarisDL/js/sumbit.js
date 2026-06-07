@@ -1,7 +1,6 @@
 
 import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm'
 const REST_URL = '';
-const supabase = createClient('https://phjrcdjjftlvarupieyk.supabase.co', 'sb_publishable_A1nmH7cSLTR0as3dTyEmOw_6ku0MNO3')
 const webhookUrl = process.env.DISCORD_WEBHOOK_URL;
 
 function cargarDatalistNiveles() {
