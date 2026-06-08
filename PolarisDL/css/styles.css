@@ -37,7 +37,6 @@ html, body {
 
 .boton-nivel, 
 .list-group-item-action.boton-nivel {
-    background-color: transparent !important; 
     color: #ffffff !important;
     border-color: rgba(200, 200, 200, 0.4) !important; 
     transition: background-color 0.2s ease;
