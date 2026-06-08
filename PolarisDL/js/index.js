@@ -20,11 +20,12 @@ fetch('/api/levels')
     contenedorLista.innerHTML = '';
 
     listaNiveles.forEach((nivel) => {
-        console.log(nivel);
+        console.log("PolarisDL/Recursos/${nivel.ID_Level}.png");
+         console.log("Recursos/${nivel.ID_Level}.png")
         const itemHTML = `
             <button type="button" 
                 data-id="${nivel.ID_Level}" 
-              style="background-image:PolarisDL/Recursos/${nivel.ID_Level}.png !important "  class="list-group-item list-group-item-action bg-dark text-white border-secondary d-flex justify-content-between align-items-center py-3 boton-nivel">
+              style="background-image: url(/Recursos/${nivel.ID_Level}.png) !important;"  class="list-group-item list-group-item-action bg-dark text-white border-secondary d-flex justify-content-between align-items-center py-3 boton-nivel">
             <div class="text-start">
                 <h5 class="mb-1 fw-bold">#${nivel.Top} ${nivel.Nombre_Nivel}</h5>
             </div>
@@ -32,7 +33,7 @@ fetch('/api/levels')
         `;
         contenedorLista.innerHTML += itemHTML;
     });
-
+    
     contenedorLista.addEventListener('click', (evento) => {
         
         const botonTocado = evento.target.closest('.boton-nivel');
