@@ -67,10 +67,10 @@ let urlEmbed = '';
 
 if (urlOriginal.includes('watch?v=')) {
     const videoId = urlOriginal.split('watch?v=')[1].split('&')[0];
-    urlEmbed = `https://www.youtube.com/embed/${videoId}`;
+    urlEmbed = `https://www.youtube-nocookie.com/embed/${videoId}`;
 } else if (urlOriginal.includes('youtu.be/')) {
     const videoId = urlOriginal.split('youtu.be/')[1].split('?')[0];
-    urlEmbed = `https://www.youtube.com/embed/${videoId}`;
+    urlEmbed = `https://www.youtube-nocookie.com/embed/${videoId}`;
 } else if (urlOriginal.includes('embed/')) {
     urlEmbed = urlOriginal;
 } else {
