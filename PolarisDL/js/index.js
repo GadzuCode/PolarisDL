@@ -51,7 +51,7 @@ fetch('/api/levels')
     const idNivelSeleccionado = botonTocado.dataset.id;
    
             
-    elemento.style.background-image: `url(/Recursos/'${idNivelSeleccionado}.png')` !important;
+    elemento.style.backgroundImage = `url('/Recursos/${idNivelSeleccionado}.png')`;
       //  console.log("Cargando detalles y submits del nivel:", idNivelSeleccionado);
         
         cargarSubmitsDelNivel(idNivelSeleccionado);
