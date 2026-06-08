@@ -20,12 +20,10 @@ fetch('/api/levels')
     contenedorLista.innerHTML = '';
 
     listaNiveles.forEach((nivel) => {
-        console.log("PolarisDL/Recursos/${nivel.ID_Level}.png");
-         console.log("Recursos/${nivel.ID_Level}.png")
         const itemHTML = `
             <button type="button" 
                 data-id="${nivel.ID_Level}" 
-              style="background-image: url(/Recursos/${nivel.ID_Level}.png) !important;"  class="list-group-item list-group-item-action bg-dark text-white border-secondary d-flex justify-content-between align-items-center py-3 boton-nivel">
+              style="background-image: url(/Recursos/${nivel.ID_Level}.png) !important; background-size: cover;"  class="list-group-item list-group-item-action bg-dark text-white border-secondary d-flex justify-content-between align-items-center py-3 boton-nivel">
             <div class="text-start">
                 <h5 class="mb-1 fw-bold">#${nivel.Top} ${nivel.Nombre_Nivel}</h5>
             </div>
@@ -51,11 +49,11 @@ fetch('/api/levels')
 
     const idNivelSeleccionado = botonTocado.dataset.id;
         
-        console.log("Cargando detalles y submits del nivel:", idNivelSeleccionado);
+      //  console.log("Cargando detalles y submits del nivel:", idNivelSeleccionado);
         
         cargarSubmitsDelNivel(idNivelSeleccionado);
 
-    console.log("El Top seleccionado es el número:", numeroTop); 
+    //console.log("El Top seleccionado es el número:", numeroTop); 
 const nivelSeleccionado = listaNiveles.find(n => Number(n.Top) === Number(numeroTop));
         if (!nivelSeleccionado) {
             console.error("No se encontró el nivel en la lista");
@@ -119,7 +117,7 @@ function cargarSubmitsDelNivel(idLevel) {
                 }
                 
                 listaSubmits.forEach(submit => {
-    console.log("Submit con nombre:", submit);
+    //console.log("Submit con nombre:", submit);
     
     let nombreJugador = "Jugador Anónimo";
     if (submit.Jugador && submit.Jugador.Nombre) {
