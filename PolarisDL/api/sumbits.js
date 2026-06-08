@@ -22,8 +22,8 @@ export default async function handler(req, res) {
                     Jugador:Player ( Nombre )
                 `)
                 .eq('Nivel', id_level) 
-                .eq('Status', 'A');
-                 .order('Id_Sumbit', { ascending: true })
+                .eq('Status', 'A')
+                .order('Id_Sumbit', { ascending: true });
 
             if (error) {
                 console.error("❌ Error en Supabase:", error.message);
