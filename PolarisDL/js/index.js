@@ -29,9 +29,6 @@ fetch('/api/levels')
                 class="list-group-item list-group-item-action bg-dark text-white border-secondary d-flex justify-content-between align-items-center py-3 boton-nivel">
             <div class="text-start">
                 <h5 class="mb-1 fw-bold">#${nivel.Top} ${nivel.Nombre_Nivel}</h5>
-                <small class="text-secondary">Creado por: <span class="text-white">${creador}</span></small>
-                <br>
-                <small class="text-secondary">Verificado por: <span class="text-white">${verificador}</span></small>
             </div>
         </button>
         `;
