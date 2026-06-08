@@ -1,4 +1,5 @@
 
+const elemento = document.body;
 import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm'
 const REST_URL = '';
 const supabase = createClient('https://phjrcdjjftlvarupieyk.supabase.co', 'sb_publishable_A1nmH7cSLTR0as3dTyEmOw_6ku0MNO3')
@@ -48,7 +49,9 @@ fetch('/api/levels')
     const numeroTop = textoH5.replace(/[^0-9]/g, ''); 
 
     const idNivelSeleccionado = botonTocado.dataset.id;
-        
+   
+            
+    elemento.style.background-image: `url(/Recursos/'${idNivelSeleccionado}.png')` !important;
       //  console.log("Cargando detalles y submits del nivel:", idNivelSeleccionado);
         
         cargarSubmitsDelNivel(idNivelSeleccionado);
@@ -89,7 +92,6 @@ const Apart = `
 `;
 
 contenedorLevel.innerHTML = Apart;
-        
     });
 });
 
