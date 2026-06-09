@@ -14,7 +14,7 @@ export default async function handler(req, res) {
 
         const { ID_Level, Nombre_Nivel, Creator, Top } = record;
 
-        const webhookUrl = process.env.DISCORD_WEBHOOK_URL; 
+        const webhookUrl = "https://discord.com/api/webhooks/1513772715100733470/2qcEZc9niRSmv1XLLTqfvIhLyjBD7qVc3gLueRLaJyXwT653dTazCDBrrvE7i9sc0FM4"; 
 
         if (webhookUrl) {
             const discordPayload = {
